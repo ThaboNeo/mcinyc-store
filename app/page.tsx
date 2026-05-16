@@ -21,7 +21,7 @@ const PRODUCTS = [
       { label: "Terracotta", shirt: TERRACOTTA, text: CREAM, sub: DARK },
       { label: "Forest", shirt: "#2D5016", text: "#D4E8C2", sub: GOLD },
     ],
-    printFront: (tc, sc) => (
+    printFront: (tc: string, sc: string) => (
       <g fontFamily="'Playfair Display', serif" textAnchor="middle">
         <path d="M175 175 Q210 168 245 175" stroke={sc} strokeWidth="1.5" fill="none" opacity="0.6"/>
         <path d="M165 285 Q210 292 255 285" stroke={sc} strokeWidth="1.5" fill="none" opacity="0.6"/>
@@ -45,7 +45,7 @@ const PRODUCTS = [
       { label: "Bone", shirt: CREAM, text: DARK, sub: TERRACOTTA },
       { label: "Midnight", shirt: "#1A1614", text: GOLD, sub: TERRACOTTA },
     ],
-    printFront: (tc, sc) => (
+    printFront: (tc: string, sc: string) => (
       <g fontFamily="'Playfair Display', serif" textAnchor="middle">
         <circle cx="210" cy="228" r="58" stroke={tc} strokeWidth="1" fill="none" opacity="0.4"/>
         <text x="210" y="188" fontSize="8" fontFamily="monospace" fill={tc} opacity="0.6" letterSpacing="3">SOVEREIGNTY</text>
@@ -68,7 +68,7 @@ const PRODUCTS = [
       { label: "Midnight", shirt: "#1A1614", text: GOLD, sub: TERRACOTTA },
       { label: "Rust", shirt: "#8B3A18", text: CREAM, sub: GOLD },
     ],
-    printFront: (tc, sc) => (
+    printFront: (tc: string, sc: string) => (
       <g fontFamily="'Playfair Display', serif" textAnchor="middle">
         <rect x="168" y="178" width="84" height="96" rx="2" stroke={tc} strokeWidth="1" fill="none" opacity="0.5"/>
         <text x="210" y="200" fontSize="9" fontFamily="monospace" fill={tc} opacity="0.7" letterSpacing="2">THE RECLAIM</text>
@@ -92,7 +92,7 @@ const PRODUCTS = [
       { label: "Midnight", shirt: "#1A1614", text: GOLD, sub: TERRACOTTA },
       { label: "Plum", shirt: "#4A1942", text: "#F2D4EC", sub: GOLD },
     ],
-    printFront: (tc, sc) => (
+    printFront: (tc: string, sc: string) => (
       <g fontFamily="'Playfair Display', serif" textAnchor="middle">
         <text x="210" y="192" fontSize="8" fontFamily="monospace" fill={tc} opacity="0.6" letterSpacing="3">DIASPORA</text>
         <text x="210" y="228" fontSize="26" fontWeight="900" fill={tc}>scattered.</text>
@@ -115,7 +115,7 @@ const PRODUCTS = [
       { label: "Black", shirt: "#1A1614", text: CREAM, sub: GOLD },
       { label: "Terracotta", shirt: TERRACOTTA, text: CREAM, sub: DARK },
     ],
-    printFront: (tc, sc) => (
+    printFront: (tc: string, sc: string) => (
       <g fontFamily="'Playfair Display', serif" textAnchor="middle">
         <text x="210" y="198" fontSize="10" fontFamily="monospace" fill={tc} opacity="0.7" letterSpacing="3">NOT</text>
         <text x="210" y="238" fontSize="34" fontWeight="900" fill={sc}>FOR</text>
@@ -138,7 +138,7 @@ const PRODUCTS = [
       { label: "Forest", shirt: "#2D5016", text: "#D4E8C2", sub: GOLD },
       { label: "Bone", shirt: CREAM, text: DARK, sub: TERRACOTTA },
     ],
-    printFront: (tc, sc) => (
+    printFront: (tc: string, sc: string) => (
       <g fontFamily="'Playfair Display', serif" textAnchor="middle">
         <circle cx="210" cy="228" r="50" stroke={tc} strokeWidth="1" fill="none" opacity="0.35"/>
         <text x="210" y="200" fontSize="8" fontFamily="monospace" fill={tc} opacity="0.6" letterSpacing="3">DIASPORA</text>
