@@ -6,7 +6,35 @@ const GOLD = "#E8C547";
 const CREAM = "#F0EAD6";
 const DARK = "#0F0E0B";
 const MID = "#1C1A16";
- 
+ type Colorway = {
+  label: string;
+  shirt: string;
+  text: string;
+  sub: string;
+};
+
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+  tag: string;
+  sizes: string[];
+  description: string;
+  details: string[];
+  colorways: Colorway[];
+  printFront: (tc: string, sc: string) => React.ReactNode;
+};
+
+type CartItem = {
+  cartId: string;
+  productId: string;
+  name: string;
+  price: number;
+  colorIdx: number;
+  colorLabel: string;
+  size: string;
+  qty: number;
+};
 const PRODUCTS = [
   {
     id: "ancestor-tee",
