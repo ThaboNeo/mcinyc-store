@@ -296,7 +296,7 @@ function CartDrawer({ cart, setCart, open, onClose }: { cart: CartItem[]; setCar
  
 function ProductModal({ product, onClose, onAdd }: { product: Product; onClose: () => void; onAdd: (args: { product: Product; colorIdx: number; size: string }) => void }) {
   const [colorIdx, setColorIdx] = useState(0);
-  const [size, setSize] = useState(null);
+  const [size, setSize] = useState<string | null>(null);
   const [added, setAdded] = useState(false);
  
   function handleAdd() {
