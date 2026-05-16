@@ -178,7 +178,7 @@ const PRODUCTS = [
   },
 ];
  
-function ShirtSVG({ product, colorIdx = 0, size = 320 }) {
+function ShirtSVG({ product, colorIdx = 0, size = 320 }: { product: Product; colorIdx?: number; size?: number }) {
   const cw = product.colorways[colorIdx];
   const h = size * (460 / 420);
   const filterId = `shadow-${product.id}-${colorIdx}`;
@@ -225,7 +225,7 @@ const qtyBtn = {
   display: "flex", alignItems: "center", justifyContent: "center",
 };
  
-function CartDrawer({ cart, setCart, open, onClose }) {
+function CartDrawer({ cart, setCart, open, onClose }: { cart: CartItem[]; setCart: React.Dispatch<React.SetStateAction<CartItem[]>>; open: boolean; onClose: () => void }) {
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
  
   function updateQty(cartId, delta) {
@@ -294,7 +294,7 @@ function CartDrawer({ cart, setCart, open, onClose }) {
   );
 }
  
-function ProductModal({ product, onClose, onAdd }) {
+function ProductModal({ product, onClose, onAdd }: { product: Product; onClose: () => void; onAdd: (args: { product: Product; colorIdx: number; size: string }) => void }) {
   const [colorIdx, setColorIdx] = useState(0);
   const [size, setSize] = useState(null);
   const [added, setAdded] = useState(false);
