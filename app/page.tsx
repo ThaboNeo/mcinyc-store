@@ -228,7 +228,7 @@ const qtyBtn = {
 function CartDrawer({ cart, setCart, open, onClose }: { cart: CartItem[]; setCart: React.Dispatch<React.SetStateAction<CartItem[]>>; open: boolean; onClose: () => void }) {
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
  
-  function updateQty(cartId, delta) {
+  function updateQty(cartId: string, delta: number) {
     setCart(prev =>
       prev.map(i => i.cartId === cartId ? { ...i, qty: i.qty + delta } : i).filter(i => i.qty > 0)
     );
