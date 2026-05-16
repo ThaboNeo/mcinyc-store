@@ -357,7 +357,7 @@ function ProductModal({ product, onClose, onAdd }: { product: Product; onClose: 
   );
 }
  
-function ShareModal({ onClose }) {
+function ShareModal({ onClose }: { onClose: () => void }) {
   const [copied, setCopied] = useState(false);
   const url = typeof window !== "undefined" ? window.location.href : "";
  
