@@ -1,6 +1,11 @@
-// Single source of truth for products. Imported by the storefront (client)
-// AND by /api/checkout (server). The server NEVER trusts prices sent from
-// the client — it looks them up here.
+/**
+ * Single source of truth for products with multi-currency support.
+ * Imported by the storefront (client) AND by /api/checkout (server).
+ * The server NEVER trusts prices sent from the client — it looks them up here.
+ *
+ * Prices stored in ZAR (South African Rand) as primary currency.
+ * USD prices are calculated server-side at checkout for international orders.
+ */
 
 export type Colorway = {
   label: string;
@@ -12,7 +17,7 @@ export type Colorway = {
 export type Product = {
   id: string;
   name: string;
-  price: number; // USD, whole dollars to match site copy. Converted to cents at the Stripe boundary.
+  priceZAR: number; // ZAR, whole rand
   tag: string;
   sizes: string[];
   description: string;
@@ -29,7 +34,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "ancestor-tee",
     name: "The Ancestor Tee",
-    price: 48,
+    priceZAR: 890, // ~$48 USD
     tag: "HERITAGE DROP",
     sizes: ["XS", "S", "M", "L", "XL", "2XL"],
     description: "Heavyweight 100% organic cotton. Screen-printed with archival inks. Wear your roots, not theirs.",
@@ -43,7 +48,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "sovereignty-crew",
     name: "The Sovereignty Crewneck",
-    price: 88,
+    priceZAR: 1630, // ~$88 USD
     tag: "CORE COLLECTION",
     sizes: ["XS", "S", "M", "L", "XL", "2XL"],
     description: "French terry crewneck. Relaxed fit. Sovereignty looks good on everyone.",
@@ -57,7 +62,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "reclaim-jacket",
     name: "The Reclaim Jacket",
-    price: 165,
+    priceZAR: 3050, // ~$165 USD
     tag: "STATEMENT WEAR",
     sizes: ["S", "M", "L", "XL", "2XL"],
     description: "Oversized utility silhouette with embroidered chest and back. Unapologetic.",
@@ -71,7 +76,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "diaspora-hoodie",
     name: "Diaspora Hoodie",
-    price: 98,
+    priceZAR: 1815, // ~$98 USD
     tag: "COLLECTOR'S PIECE",
     sizes: ["XS", "S", "M", "L", "XL", "2XL"],
     description: "For everywhere the wind has scattered us. Heavyweight pullover with hand-illustrated hem embroidery.",
@@ -85,7 +90,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "not-for-you-tote",
     name: "Not For You Tote",
-    price: 35,
+    priceZAR: 650, // ~$35 USD
     tag: "CARRY IT",
     sizes: ["One Size"],
     description: "Heavy canvas. The bag that says exactly what you mean.",
@@ -99,7 +104,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "bucket-hat",
     name: "Diaspora Bucket Hat",
-    price: 42,
+    priceZAR: 775, // ~$42 USD
     tag: "ACCESSORIES",
     sizes: ["S/M", "L/XL"],
     description: "Wherever the wind scattered us, we arrive with intention.",
@@ -112,6 +117,24 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
+/**
+ * Find a product by ID
+ */
 export function findProduct(id: string): Product | undefined {
   return PRODUCTS.find((p) => p.id === id);
+}
+
+/**
+ * Get product price in a specific currency
+ * @param product - Product object
+ * @param currency - Target currency ("ZAR" or "USD")
+ * @returns Price in whole units of the target currency
+ */
+export function getProductPrice(product: Product, currency: "ZAR" | "USD"): number {
+  if (currency === "ZAR") {
+    return product.priceZAR;
+  }
+  // Convert ZAR to USD
+  const exchangeRate = parseFloat(process.env.NEXT_PUBLIC_ZAR_USD_RATE ?? "18.5");
+  return Math.round(product.priceZAR / exchangeRate);
 }
