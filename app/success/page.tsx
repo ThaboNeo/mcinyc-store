@@ -1,7 +1,6 @@
-// /success?session_id=...
+// /success?payment_id=...
 //
-// Server component. Reads the order via the orders seam (which reads from
-// Stripe today, from Postgres tomorrow — this page doesn't care).
+// Server component. Reads the order via the orders seam.
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -18,16 +17,16 @@ export const dynamic = "force-dynamic";
 export default async function SuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string }>;
+  searchParams: Promise<{ payment_id?: string }>;
 }) {
   const params = await searchParams;
-  const sessionId = params.session_id;
+  const paymentId = params.payment_id;
 
-  if (!sessionId) {
+  if (!paymentId) {
     redirect("/");
   }
 
-  const order = await orders.getOrder(sessionId);
+  const order = await orders.getOrder(paymentId);
 
   if (!order || order.status === "failed") {
     return (
@@ -40,7 +39,7 @@ export default async function SuccessPage({
   }
 
   const pending = order.status === "pending";
-  const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+  const money = (rands: number) => `R ${rands.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
     <Shell>

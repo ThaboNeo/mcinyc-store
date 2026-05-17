@@ -86,9 +86,9 @@ function CartDrawer({
   const [checkingOut, setCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
-  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0); // dollars
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0); // ZAR rands
   const region = findRegion(regionId);
-  const shipping = region ? region.amount / 100 : 0; // back to dollars for display
+  const shipping = region ? region.amountZAR : 0;
   const total = subtotal + shipping;
 
   function updateQty(cartId: string, delta: number) {
@@ -116,10 +116,22 @@ function CartDrawer({
         }),
       });
       const data = await res.json();
-      if (!res.ok || !data.url) {
+      if (!res.ok || !data.fields) {
         throw new Error(data.error || "Checkout failed");
       }
-      window.location.href = data.url;
+      // Build and submit a hidden form — PayFast requires a form POST.
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = data.payfastUrl;
+      for (const [key, value] of Object.entries(data.fields as Record<string, string>)) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+      }
+      document.body.appendChild(form);
+      form.submit();
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : "Something went wrong");
       setCheckingOut(false);
@@ -186,7 +198,7 @@ function CartDrawer({
                     </button>
                   </div>
                 </div>
-                <div style={{ color: CREAM, fontFamily: "monospace", fontSize: 14, flexShrink: 0 }}>${item.price * item.qty}</div>
+                <div style={{ color: CREAM, fontFamily: "monospace", fontSize: 14, flexShrink: 0 }}>R {item.price * item.qty}</div>
               </div>
             );
           })}
@@ -219,7 +231,7 @@ function CartDrawer({
             >
               {SHIPPING_REGIONS.map((r) => (
                 <option key={r.id} value={r.id} style={{ background: MID }}>
-                  {r.name} — ${(r.amount / 100).toFixed(2)} · {r.estimateDays.min}–{r.estimateDays.max} business days
+                  {r.name} — R {r.amountZAR} · {r.estimateDays.min}–{r.estimateDays.max} business days
                 </option>
               ))}
             </select>
@@ -227,15 +239,15 @@ function CartDrawer({
 
           <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", fontFamily: "monospace", fontSize: 12, color: CREAM, opacity: 0.6 }}>
             <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>R {subtotal.toFixed(2)}</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", fontFamily: "monospace", fontSize: 12, color: CREAM, opacity: 0.6 }}>
             <span>Shipping</span>
-            <span>${shipping.toFixed(2)}</span>
+            <span>R {shipping.toFixed(2)}</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0 16px", fontFamily: "monospace", fontSize: 14, color: CREAM, fontWeight: 700, borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: 6 }}>
             <span>Total</span>
-            <span>${total.toFixed(2)}</span>
+            <span>R {total.toFixed(2)}</span>
           </div>
 
           {checkoutError && (
@@ -309,7 +321,7 @@ function ProductModal({
         <div className="product-modal-body" style={{ flex: 1, padding: "36px 32px", overflowY: "auto" }}>
           <button onClick={onClose} aria-label="Close product details" style={{ position: "absolute", top: 16, right: 20, background: "none", border: "none", color: CREAM, fontSize: 24, cursor: "pointer", opacity: 0.5 }}>×</button>
           <h2 style={{ fontFamily: "'Playfair Display', serif", color: CREAM, fontSize: 28, fontWeight: 900, margin: "0 0 4px" }}>{product.name}</h2>
-          <div style={{ color: GOLD, fontFamily: "monospace", fontSize: 20, fontWeight: 700, marginBottom: 16 }}>${product.price}</div>
+          <div style={{ color: GOLD, fontFamily: "monospace", fontSize: 20, fontWeight: 700, marginBottom: 16 }}>R {product.priceZAR}</div>
           <p style={{ color: CREAM, opacity: 0.65, fontFamily: "monospace", fontSize: 13, lineHeight: 1.7, marginBottom: 24 }}>{product.description}</p>
           <div style={{ marginBottom: 24 }}>
             <div style={{ color: CREAM, opacity: 0.5, fontFamily: "monospace", fontSize: 10, letterSpacing: "0.15em", marginBottom: 10 }}>COLORWAY — {cw.label}</div>
@@ -354,7 +366,7 @@ function ProductModal({
             disabled={!size}
             style={{ width: "100%", padding: "16px", background: added ? "#2D7D46" : !size ? "rgba(200,91,42,0.4)" : TERRACOTTA, border: "none", color: added ? "#fff" : DARK, fontFamily: "monospace", fontWeight: 700, fontSize: 13, letterSpacing: "0.12em", cursor: size ? "pointer" : "not-allowed", borderRadius: 2, transition: "background 0.3s" }}
           >
-            {added ? "✓ ADDED TO CART" : !size ? "SELECT A SIZE" : `ADD TO CART — $${product.price}`}
+            {added ? "✓ ADDED TO CART" : !size ? "SELECT A SIZE" : `ADD TO CART — R ${product.priceZAR}`}
           </button>
         </div>
       </div>
@@ -443,7 +455,7 @@ export default function Store() {
         return prev.map((i) => (i.cartId === existing.cartId ? { ...i, qty: i.qty + 1 } : i));
       }
       const cartId = `${product.id}-${colorIdx}-${size}-${Date.now()}`;
-      return [...prev, { cartId, productId: product.id, name: product.name, price: product.price, colorIdx, colorLabel: cw.label, size, qty: 1 }];
+      return [...prev, { cartId, productId: product.id, name: product.name, price: product.priceZAR, colorIdx, colorLabel: cw.label, size, qty: 1 }];
     });
     setCartOpen(true);
   }
@@ -581,7 +593,7 @@ export default function Store() {
                 <h3 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 18, color: cw.text, marginBottom: 6 }}>{product.name}</h3>
                 <p style={{ fontFamily: "monospace", fontSize: 11, color: cw.text, opacity: 0.65, lineHeight: 1.6, marginBottom: 16, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{product.description}</p>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontFamily: "monospace", fontSize: 18, fontWeight: 700, color: cw.text }}>${product.price}</span>
+                  <span style={{ fontFamily: "monospace", fontSize: 18, fontWeight: 700, color: cw.text }}>R {product.priceZAR}</span>
                   <span style={{ background: "rgba(0,0,0,0.35)", color: cw.text, fontFamily: "monospace", fontSize: 10, letterSpacing: "0.12em", padding: "6px 12px", borderRadius: 2, fontWeight: 700 }}>VIEW →</span>
                 </div>
               </div>
